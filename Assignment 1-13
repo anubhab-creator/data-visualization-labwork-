@@ -1,0 +1,285 @@
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
+
+# ==========================================
+# BASIC GRAPH FUNCTION
+# ==========================================
+
+def draw_basic_graph(graph_type, mode):
+
+    # ==============================
+    # STATIC GRAPHS
+    # ==============================
+    if mode == "static":
+
+        plt.figure()
+
+        if graph_type == "line":
+            x = [1, 2, 3, 4, 5]
+            y = [10, 25, 15, 30, 20]
+            plt.plot(x, y, marker='o')
+            plt.xlabel("X Axis")
+            plt.ylabel("Y Axis")
+
+        elif graph_type == "bar":
+            categories = ['A', 'B', 'C', 'D']
+            values = [10, 20, 15, 25]
+            plt.bar(categories, values)
+
+        elif graph_type == "hist":
+            data = np.random.randn(1000)
+            plt.hist(data, bins=10, edgecolor='black')
+
+        elif graph_type == "pie":
+            labels = ['Apple', 'Banana', 'Cherry', 'Date']
+            sizes = [30, 20, 25, 25]
+            plt.pie(sizes, labels=labels, autopct='%1.1f%%')
+            plt.title("Pie Chart (Static)")
+            plt.show()
+            return
+
+        elif graph_type == "scatter":
+            x = np.random.rand(20) * 10
+            y = np.random.rand(20) * 10
+            plt.scatter(x, y)
+            plt.xlabel("X Axis")
+            plt.ylabel("Y Axis")
+
+        plt.title(f"{graph_type.capitalize()} Graph (Static)")
+        plt.grid(True)
+        plt.show()
+
+    # ==============================
+    # DYNAMIC GRAPHS (ANIMATIONS)
+    # ==============================
+    elif mode == "dynamic":
+
+        fig, ax = plt.subplots()
+
+        # ---------------- LINE ----------------
+        if graph_type == "line":
+
+            x = np.linspace(0, 10, 200)
+            line, = ax.plot([], [], lw=2)
+
+            ax.set_xlim(0, 10)
+            ax.set_ylim(-2, 2)
+
+            def update(frame):
+                y = np.sin(x + frame * 0.1)
+                line.set_data(x, y)
+                return line,
+
+            ani = animation.FuncAnimation(
+                fig, update, frames=100, interval=50, blit=True
+            )
+
+            plt.title("Animated Line Wave")
+            plt.show()
+
+        # ---------------- BAR ----------------
+        elif graph_type == "bar":
+
+            categories = ['A', 'B', 'C', 'D']
+            bars = ax.bar(categories, [1, 2, 3, 4])
+            ax.set_ylim(0, 10)
+
+            def update(frame):
+                for bar in bars:
+                    bar.set_height(np.random.randint(1, 10))
+                return bars
+
+            ani = animation.FuncAnimation(
+                fig, update, frames=100, interval=500, blit=True
+            )
+
+            plt.title("Animated Bar Chart")
+            plt.show()
+
+        # ---------------- HIST ----------------
+        elif graph_type == "hist":
+
+            def update(frame):
+                ax.clear()
+                data = np.random.randn(1000)
+                ax.hist(data, bins=10, edgecolor='black')
+                ax.set_title("Animated Histogram")
+
+            ani = animation.FuncAnimation(
+                fig, update, frames=50, interval=500
+            )
+
+            plt.show()
+
+        # ---------------- PIE ----------------
+        elif graph_type == "pie":
+
+            labels = ['A', 'B', 'C', 'D']
+
+            def update(frame):
+                ax.clear()
+                sizes = np.random.randint(1, 10, 4)
+                ax.pie(sizes, labels=labels, autopct='%1.1f%%')
+                ax.set_title("Animated Pie Chart")
+
+            ani = animation.FuncAnimation(
+                fig, update, frames=50, interval=500
+            )
+
+            plt.show()
+
+        # ---------------- SCATTER ----------------
+        elif graph_type == "scatter":
+
+            scatter = ax.scatter([], [])
+            ax.set_xlim(0, 10)
+            ax.set_ylim(0, 10)
+
+            def update(frame):
+                x = np.random.rand(30) * 10
+                y = np.random.rand(30) * 10
+                scatter.set_offsets(np.c_[x, y])
+                return scatter,
+
+            ani = animation.FuncAnimation(
+                fig, update, frames=100, interval=300, blit=True
+            )
+
+            plt.title("Animated Scatter Plot")
+            plt.show()
+
+
+# ==========================================
+# SUBPLOT FUNCTION
+# ==========================================
+
+def draw_subplot():
+
+    x = np.linspace(0, 10, 100)
+
+    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+    fig.suptitle("Subplot: Multiple Graphs")
+
+    axs[0, 0].plot(x, np.sin(x))
+    axs[0, 0].set_title("Line")
+
+    axs[0, 1].scatter(x, np.cos(x), s=10)
+    axs[0, 1].set_title("Scatter")
+
+    axs[1, 0].bar(['A', 'B', 'C'], [10, 20, 15])
+    axs[1, 0].set_title("Bar")
+
+    axs[1, 1].hist(np.random.randn(100), bins=10)
+    axs[1, 1].set_title("Histogram")
+
+    plt.tight_layout()
+    plt.show()
+
+
+# ==========================================
+# EXTRA ANIMATIONS
+# ==========================================
+
+def animate_moving_circle():
+
+    fig, ax = plt.subplots()
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+
+    circle = plt.Circle((1, 5), 0.5)
+    ax.add_patch(circle)
+
+    def update(frame):
+        circle.center = (1 + frame * 0.1, 5)
+        return circle,
+
+    ani = animation.FuncAnimation(
+        fig, update, frames=80, interval=50, blit=True
+    )
+
+    plt.title("Animated Moving Circle")
+    plt.show()
+
+
+def animate_moving_line():
+
+    fig, ax = plt.subplots()
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+
+    line, = ax.plot([], [], lw=3)
+
+    def update(frame):
+        shift = frame * 0.1
+        x_data = [1 + shift, 1 + shift]
+        y_data = [1, 4]
+        line.set_data(x_data, y_data)
+        return line,
+
+    ani = animation.FuncAnimation(
+        fig, update, frames=80, interval=50, blit=True
+    )
+
+    plt.title("Animated Moving Line")
+    plt.show()
+
+
+# ==========================================
+# MAIN MENU
+# ==========================================
+
+if __name__ == "__main__":
+
+    while True:
+
+        print("\n==============================")
+        print("      PYTHON GRAPHING LAB")
+        print("==============================")
+        print("1. Line Chart")
+        print("2. Bar Chart")
+        print("3. Histogram")
+        print("4. Pie Chart")
+        print("5. Scatter Plot")
+        print("6. Subplot")
+        print("7. Animated Circle")
+        print("8. Animated Line")
+        print("0. Exit")
+
+        choice = input("Enter Choice (0-8): ")
+
+        if choice == '0':
+            print("Exiting...")
+            break
+
+        elif choice in ['1','2','3','4','5']:
+
+            mode_input = input("Mode? (s = Static, d = Dynamic): ").lower()
+
+            if mode_input not in ['s','d']:
+                print("Invalid mode. Using Static.")
+                mode_input = 's'
+
+            mode = "dynamic" if mode_input == 'd' else "static"
+
+            types = {
+                '1': 'line',
+                '2': 'bar',
+                '3': 'hist',
+                '4': 'pie',
+                '5': 'scatter'
+            }
+
+            draw_basic_graph(types[choice], mode)
+
+        elif choice == '6':
+            draw_subplot()
+
+        elif choice == '7':
+            animate_moving_circle()
+
+        elif choice == '8':
+            animate_moving_line()
+
+        else:
+            print("Invalid choice. Try again.")
